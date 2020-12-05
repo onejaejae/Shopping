@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Typography, Button, Form, Input } from 'antd';
 import FileUpload from '../../utils/FileUpload'
+import Axios from 'axios';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -15,12 +16,12 @@ const contients = [
     { key : 7, value : "Antarctica" }
 ];
 
-function UploadProductPage() {
+function UploadProductPage(props) {
     const [Titles, setTitles] = useState("");
     const [Description, setDescription] = useState("");
     const [Price, setPrice] = useState(0);
     const [Contient, setContient] = useState(1);
-    const [Image, setImage] = useState([]);
+    const [Images, setImages] = useState([]);
 
     const titleChangeHandler = (e) => {
         setTitles(e.target.value);
@@ -39,15 +40,47 @@ function UploadProductPage() {
        
     }
 
+    const submitHandler = (e) => {
+
+        if(!Titles || !Description || !Price ||  !Contient ||  !Images){
+            return alert('모든 값을 넣어주세요!')
+        }
+      
+        const variable = {
+            writer : localStorage.getItem('userId'),
+            title : Titles,
+            description : Description,
+            price : Price,
+            images : Images,
+            continents : Contient
+        }
+
+        Axios.post('/api/product/upload', variable)
+            .then(res => {
+                if(res.data.success){
+                    alert('상품 업로드에 성공했습니다')
+                    props.history.push('/');
+                }else{
+                    alert('상품 업로드에 실패했습니다.');
+                }
+            })
+
+        
+    }
+
+    const updateImages = ( newImages ) => {
+        setImages(newImages);
+    }
+
     return (
         
         <div style={{ maxWidth:'700px', margin : '2rem auto'}}>
             <div style={{ textAlign : 'center', marginBottom : '2rem' }}>
                 <Title level={2}>여행 상품 업로그</Title>
             </div>
-            <Form>
+            <Form onSubmit={ submitHandler }>
                 {/* Drop Zone */}
-                <FileUpload />
+                <FileUpload refreshFunc={ updateImages }/>
 
                 
                 <br />
@@ -66,12 +99,12 @@ function UploadProductPage() {
                 <br />
                 <select onChange={ contientChangeHandler }>
                     {contients.map( contient => {
-                        return <option key={ contient.key } value={contient.k} >{contient.value}</option>
+                        return <option key={ contient.key } value={ contient.key } >{ contient.value }</option>
                     })}
                 </select>
                 <br />
                 <br />
-                <Button>
+                <Button onClick={ submitHandler } >
                     확인
                 </Button>
             </Form>

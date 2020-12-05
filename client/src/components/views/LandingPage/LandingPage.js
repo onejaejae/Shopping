@@ -2,9 +2,8 @@ import React from 'react'
 import { FaCode } from "react-icons/fa";
 import { useSelector } from 'react-redux';
 
-function LandingPage() {
-    const user = useSelector(state => state.user)
-    
+function LandingPage({ user }) {
+     
     return (
         <>
             <div className="app">
