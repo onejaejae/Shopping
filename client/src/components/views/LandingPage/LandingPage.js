@@ -7,19 +7,43 @@ import ImageSlider from '../../utils/ImageSlider';
 function LandingPage() {
 
     const [Products, setProducts] = useState([]);
+
+    // mongoose의 skip, limit을 이용하기 위해 state 선언
+    const [Skip, setSkip] = useState(0);
+    const [Limit, setLimit] = useState(8);
+
+    // 더보기 버튼이 게시물이 8개 이상 될때만 보여주기 위해 state 선언
+    const [PostSize, setPostSize] = useState(0);
+
+    const getProduct = (variable) => {
+        Axios.post('/api/product/products', variable)
+        .then(res => {
+            if(res.data.success){
+                if(variable.loadMore){
+                    // # 방법 1
+                    setProducts([...Products, ...res.data.products]);
+
+                    // # 방법 2
+                   // setProducts(Products.concat(res.data.products));
+                }else{
+                    setProducts(res.data.products);
+                }
+                console.log(res.data.products.postSize)
+                setPostSize(res.data.postSize)
+            }else{
+                alert('상품을 가져오는데 실패했습니다.');
+            }
+        })
+    }
     
     useEffect(() => {
-        Axios.get('/api/product/products')
-            .then(res => {
-                if(res.data.success){
-                    console.log(res.data.products)
-                    setProducts(res.data.products);
-                }else{
-                    alert('상품을 가져오는데 실패했습니다.');
-                }
-            })
 
-
+        let variable = {
+            Skip,
+            Limit
+        }
+    
+        getProduct(variable);
     }, [])
 
     const renderCards = Products.map((product, index) => (
@@ -38,6 +62,19 @@ function LandingPage() {
     </Col>
     ))
 
+    const loadMoreHandler = () => {
+        let skip = Skip + Limit;
+
+        let variable = {
+            Skip : skip,
+            Limit,
+            loadMore : true
+        }
+    
+        getProduct(variable);
+        setSkip(skip);
+    }
+
     return (
       <div style={ {  width : '75%' , margin : '3rem auto' }}>
           <div style={{ textAlign : 'center'}}>
@@ -55,7 +92,13 @@ function LandingPage() {
                 { renderCards }
             </Row>
 
-         
+            <br />
+            { PostSize >= Limit && 
+             <div style={{ display:'flex', justifyContent : 'center' }}>
+                <button onClick={ loadMoreHandler }>더보기</button>
+            </div>
+         }
+           
 
       </div>
     )
