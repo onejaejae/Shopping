@@ -42,7 +42,7 @@ function UploadProductPage(props) {
 
     const submitHandler = (e) => {
 
-        if(!Titles || !Description || !Price ||  !Contient ||  !Images){
+        if(!Titles || !Description || !Price ||  !Contient ||  Images.length === 0){
             return alert('모든 값을 넣어주세요!')
         }
       
@@ -67,6 +67,8 @@ function UploadProductPage(props) {
 
         
     }
+
+    console.log(Images)
 
     const updateImages = ( newImages ) => {
         setImages(newImages);

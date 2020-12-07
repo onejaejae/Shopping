@@ -5,8 +5,6 @@ import Axios from 'axios';
 
 function FileUpload({ refreshFunc }) {
     const [ImagePath, setImagePath] = useState([]);
-    const [ImageName, setImageName] = useState("");
-
 
     const ondropHandler = ( files ) => {
         let formData = new FormData();
@@ -21,8 +19,8 @@ function FileUpload({ refreshFunc }) {
             .then(res => {
                 if(res.data.success){
                     // 원래의 이미지 데이터를 복사한 뒤, 백엔드에서 받아온 데이터를 추가
+                    // 서버에서 받아온 데이터가 한개이므로 ...를 안씀
                     setImagePath([...ImagePath, res.data.url]);
-                    setImageName(res.data.fileName);
 
                     // 부모 컴포넌트에서 ImagePath정보를 관리하여 서버에 요청한다.
                     // 부모 컴포넌트에서 서버쪽에 요청을 보낼때 필요한 정보이므로
@@ -56,6 +54,8 @@ function FileUpload({ refreshFunc }) {
         
 
     }
+
+    console.log(ImagePath)
 
     return (
        <div style={{ display : 'flex', justifyContent: 'space-between'}}>
