@@ -6,6 +6,7 @@ import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
 import { Contients, Price } from './Sections/Datas';
 import RadioBox from './Sections/RadioBox';
+import SearchFeature from './Sections/SearchFeature';
 
 
 function LandingPage() {
@@ -24,6 +25,7 @@ function LandingPage() {
         continents : [],
         price : []
     });
+    const [SearchValue, setSearchValue] = useState("");
 
     
 
@@ -97,13 +99,14 @@ function LandingPage() {
         let variable = {
            Skip : 0,
            Limit,
-           newFilters
+           newFilters,
+           newSearchValue : SearchValue
         }
 
-
-        getProduct(variable);
         setSkip(0);
         setFilters(newFilters)
+        getProduct(variable);
+        
     }
 
     const handlePrice = ( Radio_id ) => {
@@ -137,7 +140,21 @@ function LandingPage() {
 
     }
 
-  
+    const handleSearch = ( newSearchValue ) => {
+        
+        let variable = {
+            Skip : 0,
+            Limit,
+            newFilters : Filters,
+            newSearchValue
+         }
+
+        getProduct(variable);
+        setSkip(0);
+        setSearchValue(newSearchValue);
+    }
+
+    console.log(SearchValue)
 
     return (
       <div style={ {  width : '75%' , margin : '3rem auto' }}>
@@ -161,6 +178,10 @@ function LandingPage() {
             </Row>
             
             {/*   Search   */}
+            <div style={{ display : 'flex', justifyContent:'flex-end', margin:'1rem auto'}}>
+                <SearchFeature handleSearch={ handleSearch }/>
+            </div>
+            
 
             {/*   Cards   */}
 

@@ -74,7 +74,6 @@ router.post('/products', (req, res) => {
     for(let key in req.body.newFilters){
         // length 값이 0보다 큰 것만 find 요소로 넣어서 찾겠다.
         // 즉, filter를 적용한 것만 찾겠다
-        console.log(key)
         if(req.body.newFilters[key].length > 0){
             if(key === "price"){
                 findArgs[key] = {
@@ -87,10 +86,26 @@ router.post('/products', (req, res) => {
                 findArgs[key] = req.body.newFilters[key];
             }
         }
+    }
 
+    console.log("findArgs1",findArgs)
+
+    // MongoDB Text Search(본문 검색)
+    // ex) db.stores.find( { $text: { $search: "java coffee shop" } } )
+    // Product model을 변경해줘야 사용 가능( 자세한 것은 검색 기능 만들기 #2 9분쯤)
+    // 이것의 기능을 사용하면 제목, 본문내용 포함 형식으로 데이터를 가져올 수 있다
+
+    // $regex : "s" --> s가 포함되어있는것을 찾기 
+    // $regex : "s$" --> 끝자리가 s인것을 찾기
+    // $regex : "^s" --> 첫자리가 s인것을 찾기
+    if(req.body.newSearchValue){
+        
+        findArgs.title = {
+            $regex: req.body.newSearchValue
+        }
     }
     
-    console.log(findArgs)
+    console.log("findArgs2",findArgs)
    
     Product.find(findArgs)
         .populate('writer')

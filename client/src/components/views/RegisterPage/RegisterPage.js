@@ -76,7 +76,7 @@ function RegisterPage(props) {
             if (response.payload.success) {
               props.history.push("/login");
             } else {
-              alert(response.payload.err.errmsg)
+              alert("존재하는 이메일 입니다.")
             }
           })
 
