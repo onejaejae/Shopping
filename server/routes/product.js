@@ -70,14 +70,28 @@ router.post('/products', (req, res) => {
 
     // key는 continents, price가 된다.
     // model의 객체 property와 맞추면 편하다
+    
     for(let key in req.body.newFilters){
-        // length 값이 0이상인 것만 find 요소로 넣어서 찾겠다.
+        // length 값이 0보다 큰 것만 find 요소로 넣어서 찾겠다.
         // 즉, filter를 적용한 것만 찾겠다
+        console.log(key)
         if(req.body.newFilters[key].length > 0){
-            findArgs[key] = req.body.newFilters[key];
+            if(key === "price"){
+                findArgs[key] = {
+                    // Greater than equal
+                    $gte: req.body.newFilters[key][0],
+                    // Less than equla
+                    $lte : req.body.newFilters[key][1]
+                }
+            }else{
+                findArgs[key] = req.body.newFilters[key];
+            }
         }
+
     }
-    console.log("Skip : " ,req.body.Skip)
+    
+    console.log(findArgs)
+   
     Product.find(findArgs)
         .populate('writer')
         .skip(req.body.Skip)
@@ -87,8 +101,7 @@ router.post('/products', (req, res) => {
                 success : false,
                 err
             })
-           console.log("Products : ", products)
-           console.log("POST SIZE : ", products.length)
+
             // postSize는 더보기 버튼을 보여줄지 말지 결정하기 위한 속성      
             return res.status(200).json({
                 success : true,

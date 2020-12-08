@@ -4,7 +4,8 @@ import { Icon, Col, Card, Row } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import ImageSlider from '../../utils/ImageSlider';
 import CheckBox from './Sections/CheckBox';
-import { Contients } from './Sections/Datas';
+import { Contients, Price } from './Sections/Datas';
+import RadioBox from './Sections/RadioBox';
 
 
 function LandingPage() {
@@ -76,8 +77,9 @@ function LandingPage() {
 
     const loadMoreHandler = () => {
         let skip = Skip + Limit;
-        console.log(Filters)
-
+        
+        // 더보기를 눌렀을때, 서버에서 find의 어떤 객체가 들어있는지를 유지해야 하기 때문에
+        //   newFilters : Filters를 넣어야함!!
         let variable = {
             Skip : skip,
             Limit,
@@ -104,6 +106,19 @@ function LandingPage() {
         setFilters(newFilters)
     }
 
+    const handlePrice = ( Radio_id ) => {
+        const data = Price;
+        let array = [];
+
+        data.map((value) => {
+            if(value._id === Radio_id ){
+                array = data[value._id].array;
+            }
+        })
+
+        return array;
+    }
+
     // CheckBox 컴포넌트에서 state를 받기 위한 handler
     // price 컴포넌트에서 state를 받기 위한 handler
     // category는 price와 checkbox를 구분하기 위한 parameter
@@ -111,7 +126,13 @@ function LandingPage() {
        
         const newFilters = { ...Filters };
         newFilters[Category] = Filter;
-        console.log(newFilters)
+
+        // price일 경우 따로 로직을 구성해야 한다.
+        if(Category === "price"){
+            let PriceValue = handlePrice(Filter);
+            newFilters[Category] = PriceValue;
+        }
+
         showFilterResults(newFilters);
 
     }
@@ -125,12 +146,20 @@ function LandingPage() {
           </div>
 
             {/*   Filter   */}
+
+            <Row gutter={[16, 16]}>
+                {/* 브라우저가 large size일때, 하나의 Row의 Col 크기가 12이므로 Col이 2개
+                 xs size가 되면 하나의 하나의 Row의 Col가 24크기가 되서  Col이 1개가 된다 (반응형 구현)*/}
+                <Col lg={12} xs={24}>
+                    {/*    CheckBox     */}
+                    <CheckBox ContientsList={ Contients } handleFilter={ handleFilter }/>
+                </Col>
+                <Col lg={12} xs={24}>
+                    {/*     RadioBox     */}
+                    <RadioBox PriceList={ Price } handleFilter={ handleFilter }/>
+                </Col>
+            </Row>
             
-            {/*    CheckBox     */}
-            <CheckBox ContientsList={ Contients } handleFilter={ handleFilter }/>
-
-            {/*     RadioBox     */}
-
             {/*   Search   */}
 
             {/*   Cards   */}
