@@ -6,6 +6,8 @@ import { USER_SERVER } from '../../../Config';
 import { withRouter } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
+import { Icon, Badge } from 'antd';
+
 
 function RightMenu(props) {
   const user = useSelector(state => state.user)
@@ -40,6 +42,18 @@ function RightMenu(props) {
       <Menu mode={props.mode}>
         <Menu.Item key="upload">
           <Link to={"/product/upload"}>Upload</Link>
+        </Menu.Item>
+        <Menu.Item key="shoppingCart">
+          {user.userData && 
+
+
+            <Link to={'/user/cart'}>
+              <Badge count={user.userData.cart.length}>
+                  <Icon type="shopping-cart" style={{ fontSize : 30, marginBottom : 3}}/>
+              </Badge>
+            </Link>
+          }
+        
         </Menu.Item>
         <Menu.Item key="logout">
           <a onClick={logoutHandler}>Logout</a>
