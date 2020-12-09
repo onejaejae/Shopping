@@ -37,13 +37,14 @@ function ProductDetailPage({ match }) {
                 <Col lg={12} xs={24}>
                     {/* ProductImage */}
                     
-                   {/* { ProductDetail.images && <ProductImage ProductDetail={ ProductDetail }/> } */}
-                   <ProductImage ProductDetail={ ProductDetail }/>
-                   
+                   { ProductDetail.images && <ProductImage ProductDetail={ ProductDetail }/> }
+                
                 </Col>
                 <Col lg={12} xs={24}>
+
                     {/* ProductInfo */}
-                    <ProductInfo />
+                    <ProductInfo ProductDetail={ ProductDetail } />
+
                 </Col>
             </Row>
           
