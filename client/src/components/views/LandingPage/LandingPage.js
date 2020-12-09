@@ -7,6 +7,7 @@ import CheckBox from './Sections/CheckBox';
 import { Contients, Price } from './Sections/Datas';
 import RadioBox from './Sections/RadioBox';
 import SearchFeature from './Sections/SearchFeature';
+import { Link } from 'react-router-dom';
 
 
 function LandingPage() {
@@ -60,20 +61,22 @@ function LandingPage() {
     
         getProduct(variable);
     }, [])
-
+   
     const renderCards = Products.map((product, index) => {
     // 24를 기준으로 화면이 가장 클때, 한 카드당 6을 차지 => 4개의 카드
     // 화면이 중간일때, 카드 당 8 => 3개
     // 화면이 가장 작을 때, 카드 하나의 24 => 1개
     return<Col lg={6} md={8} xs={24}  key={ index }>
-               <Card
-                   cover={ <ImageSlider images={product.images}/> }
-               >
-                   <Meta 
-                       title={product.title}
-                       description={`$${product.price}`}
-                   />
-               </Card>
+               <Link to={`/product/${product._id}`}>
+                    <Card 
+                        cover={ <ImageSlider images={product.images}/> }
+                    >
+                        <Meta 
+                            title={product.title}
+                            description={`$${product.price}`}
+                        />
+                    </Card>
+               </Link>
            </Col>
     })
 
@@ -154,7 +157,7 @@ function LandingPage() {
         setSearchValue(newSearchValue);
     }
 
-    console.log(SearchValue)
+
 
     return (
       <div style={ {  width : '75%' , margin : '3rem auto' }}>

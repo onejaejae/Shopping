@@ -11,7 +11,7 @@ function SearchFeature({ handleSearch }) {
     }
 
     return (
-        <Search placeholder="input search text" onChange={ searchHandler } style={{ width: 200 }} value={SearchValue} />
+        <Search placeholder="Search By Typing..." onChange={ searchHandler } style={{ width: 200 }} value={SearchValue} />
     )
 }
 

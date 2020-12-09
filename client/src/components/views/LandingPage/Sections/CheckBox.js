@@ -41,7 +41,8 @@ function CheckBox({ ContientsList, handleFilter }) {
 
     return (
         <div> 
-            <Collapse defaultActiveKey={['1']} onChange>
+            {/* defaultActiveKey 0으로 설정하면 초기에 창이 닫혀있다 */}
+            <Collapse defaultActiveKey={['0']} onChange>
                 <Panel header="Contients" key="1">
                     {renderCheckBoxLists()}
                 </Panel>

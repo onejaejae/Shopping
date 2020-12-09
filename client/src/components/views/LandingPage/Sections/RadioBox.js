@@ -22,7 +22,7 @@ function RadioBox({ PriceList, handleFilter }) {
 
   return (
     <div>
-      <Collapse defaultActiveKey={["1"]} onChange>
+      <Collapse defaultActiveKey={["0"]} onChange>
         <Panel header="Price" key="1">
           <Radio.Group onChange={handleToggle} value={Value}>
             {renderRadioBox()}
