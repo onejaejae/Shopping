@@ -125,6 +125,23 @@ router.post('/products', (req, res) => {
             })
     })
 })
+
+router.post('/getProductDetail', (req, res) => {
+    Product.findOne({"_id" : req.body.productId})
+        .populate("writer")
+        .exec((err, productDetails) => {
+            if(err) return res.status(400).json({
+                success : false,
+                err
+            })
+
+            // postSize는 더보기 버튼을 보여줄지 말지 결정하기 위한 속성      
+            return res.status(200).json({
+                success : true,
+                productDetails
+            })
+        })
+})
     
 
 module.exports = router;

@@ -1,9 +1,16 @@
 import React from 'react'
 import { Descriptions, Button } from 'antd';
+import  { useDispatch } from 'react-redux';
+import { AddToCart } from '../../../../_actions/user_actions'
+
+
 
 function ProductInfo({ ProductDetail }) {
+    const dispatch = useDispatch();
+    
     const clickHandler = () => {
-        
+        // 필요한 정보를 Cart 필드에 넣는다
+        dispatch(AddToCart(ProductDetail._id))
     }
 
     return (

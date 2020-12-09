@@ -1,3 +1,4 @@
+const { text } = require('body-parser');
 const mongoose = require('mongoose');
 const { User } = require('../models/User');
 
@@ -39,6 +40,16 @@ const productSchema = mongoose.Schema({
         default : 0
     }
 }, { timestamps : true })
+
+productSchema.index({
+    title : 'text',
+    description : 'text'
+}, {
+    weights : {
+        title : 5,
+        description : 1
+    }
+})
 
 const Product = mongoose.model('Product', productSchema);
 module.exports = { Product };

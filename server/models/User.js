@@ -32,6 +32,16 @@ const userSchema = mongoose.Schema({
     },
     tokenExp :{
         type: Number
+    },
+    // 장바구니를 위한 필드
+    cart : {
+        type : Array,
+        default : []
+    },
+    // 구매 내역을 위한 필드
+    history : {
+        type : Array,
+        default : []
     }
 })
 
