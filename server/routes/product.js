@@ -70,10 +70,11 @@ router.post('/products', (req, res) => {
 
     // key는 continents, price가 된다.
     // model의 객체 property와 맞추면 편하다
-    
+    console.log("req.body.newFilters", req.body.newFilters)
     for(let key in req.body.newFilters){
         // length 값이 0보다 큰 것만 find 요소로 넣어서 찾겠다.
         // 즉, filter를 적용한 것만 찾겠다
+      
         if(req.body.newFilters[key].length > 0){
             if(key === "price"){
                 findArgs[key] = {

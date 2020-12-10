@@ -9,6 +9,7 @@ import { message } from 'antd';
 import { withRouter } from 'react-router-dom';
 
 function ProductInfo( props ) {
+    console.log(props.ProductDetail)
     const dispatch = useDispatch();
     const { userData } = useSelector(state => state.user)
 

@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
+const { Product } = require('../models/Product');
 
 const { auth } = require("../middleware/auth");
+
 
 //=================================
 //             User
@@ -18,6 +20,8 @@ router.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+        cart : req.user.cart,
+        history : req.user.history
     });
 });
 
@@ -132,17 +136,60 @@ router.post("/addToCart", auth, (req, res) => {
                 });
             })
         }
-        
-
-
-
-       
     })
+})
 
-  
+router.post('/getCart', (req, res)=>{
+    User.findOne({"_id" : req.body.userId}, (err, Info) => {
+        if(err) return res.status(400).json({
+            success : false,
+            err
+        })
 
-  
+        // return할 자료 변수
+        let Cart = [];
 
+        // product에서 자료 찾기 위한 변수
+        let arr = [];
+
+        if(Info.cart.length > 0){
+            Info.cart.map((cart) => {
+                return Cart.push({
+                   quantity : cart.quantity
+                });
+            })
+         
+            Info.cart.map((cart) => {
+                return arr.push(cart.id);
+            })
+        }
+
+        Product.find({"_id" : arr})
+            .exec((err, Info) => {
+                if(err) return res.status(400).json({
+                    success : false,
+                    err
+                })
+
+                if(Info.length > 0 ){
+                    Info.map((info, index) => {
+                        return (
+                            Cart[index].image = info.images
+                        )
+                    })
+                    Info.map((info, index) => {
+                        return (
+                            Cart[index].price = info.price
+                        )
+                    })
+                }
+                
+                return res.status(200).json({
+                    success : true,
+                    Cart
+                })
+            })
+    })
 })
 
 module.exports = router;
