@@ -139,4 +139,38 @@ router.post("/addToCart", auth, (req, res) => {
     })
 })
 
+router.get('/removeFromCart', auth, (req, res) => {
+    // 먼저 cart 안에 내가 지우려고 한 상품을 지워주기
+    const productId = req.query.id;
+    const userId = req.user._id;
+    
+    // $pull
+    // https://docs.mongodb.com/manual/reference/operator/update/pull/
+    User.findOneAndUpdate(
+        { "_id" : userId },
+        { $pull : { cart : { id : productId }}},
+        { new : true}
+    )
+    .exec((err, userInfo) => {
+        // array = ['5fccb965901a5b10f83203e0', '5fcbda94786a2f25386b35eb'] 이런식으로 바꿔주기
+        let cart = userInfo.cart;
+        let array = cart.map(item => {
+            return item.id
+        })
+
+        // product collection에서 현재 남아있는 정보를 가져오기
+        Product.find({"_id" : { $in : array }})
+            .populate('writer')
+            .exec((err, productInfo) => {
+                if(err) return res.status(400).send(err);
+
+                return res.status(200).json({
+                    productInfo,
+                    cart
+                })
+            })
+    })
+
+})
+
 module.exports = router;

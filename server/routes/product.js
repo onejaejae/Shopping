@@ -5,6 +5,8 @@ const path = require('path')
 
 const router = express.Router();
 const { Product } = require('../models/Product');
+const { User } = require('../models/User');
+const { auth } = require('../middleware/auth');
 
 // uploads 폴더는 root에 생성!
 let storage = multer.diskStorage({
@@ -144,12 +146,12 @@ router.post('/getProductDetail', (req, res) => {
         })
 })
 
-router.get('/products_by_id', (req, res) => {
+router.get('/products_by_id', auth, (req, res) => {
     let productId = req.query.id;
-
     let ids = productId.split(',');
 
     Product.find({"_id" : { $in : ids }})
+        .populate('writer')
         .exec((err, products) => {
             if(err) return res.status(400).send(err);
             return  res.status(200).json({

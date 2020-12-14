@@ -5,7 +5,8 @@ import {
     AUTH_USER,
     LOGOUT_USER,
     ADD_TO_CART,
-    GET_CART_ITEMS
+    GET_CART_ITEMS,
+    REMOVE_CART_ITEM
 } from './types';
 import { USER_SERVER } from '../components/Config.js';
 
@@ -60,8 +61,6 @@ export function AddToCart( id ){
         type: ADD_TO_CART,
         payload: request
     }
-
-    
 }
 
 export function getCartItems(cartItems, userCart){
@@ -80,12 +79,33 @@ export function getCartItems(cartItems, userCart){
         return res.data.products
      })
 
- 
-
      return {
         type : GET_CART_ITEMS,
         payload : request
      }
-
 }
+
+export function removeCartItem( productId ){
+   
+    const request = axios.get(`/api/users/removeFromCart?id=${productId}`)
+        .then(res => {
+            // productInfo , cart 정보를 조합해서 CartDetail을 만든다
+            res.data.cart.map(item => {
+                res.data.productInfo.map((product, index) => {
+                    if(item.id === product._id){
+                        res.data.productInfo[index].quantity = item.quantity
+                    }
+                })
+            })
+
+           return res.data
+        })
+
+    return {
+        type: REMOVE_CART_ITEM,
+        payload: request
+    }
+}
+
+
 
