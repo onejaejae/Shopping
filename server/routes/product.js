@@ -70,7 +70,7 @@ router.post('/products', (req, res) => {
 
     // key는 continents, price가 된다.
     // model의 객체 property와 맞추면 편하다
-    console.log("req.body.newFilters", req.body.newFilters)
+
     for(let key in req.body.newFilters){
         // length 값이 0보다 큰 것만 find 요소로 넣어서 찾겠다.
         // 즉, filter를 적용한 것만 찾겠다
@@ -89,7 +89,7 @@ router.post('/products', (req, res) => {
         }
     }
 
-    console.log("findArgs1",findArgs)
+    
 
     // MongoDB Text Search(본문 검색)
     // ex) db.stores.find( { $text: { $search: "java coffee shop" } } )
@@ -106,7 +106,7 @@ router.post('/products', (req, res) => {
         }
     }
     
-    console.log("findArgs2",findArgs)
+  
    
     Product.find(findArgs)
         .populate('writer')
@@ -143,6 +143,20 @@ router.post('/getProductDetail', (req, res) => {
             })
         })
 })
-    
+
+router.get('/products_by_id', (req, res) => {
+    let productId = req.query.id;
+
+    let ids = productId.split(',');
+
+    Product.find({"_id" : { $in : ids }})
+        .exec((err, products) => {
+            if(err) return res.status(400).send(err);
+            return  res.status(200).json({
+                success : true,
+                products
+            })
+        })
+})
 
 module.exports = router;

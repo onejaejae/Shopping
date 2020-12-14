@@ -1,26 +1,24 @@
 import React, { useEffect } from 'react'
-import Axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { getCartItems } from '../../../_actions/user_actions';
 
-
-function CartPage(props) {
-    
+function CartPage() {
+    const user = useSelector(state => state.user);
+    const dispatch = useDispatch();
 
     useEffect(() => {
-      // user cart의 Quantity 정보, cart의 담긴 product 정보가 필요함
-      const variable = {
-          userId : localStorage.getItem('userId')
-      }
-
-      Axios.post('/api/users/getCart', variable)
-        .then(res => {
-            if(res.data.success){
-                console.log(res.data)
-            }else{
-                alert('카트 정보를 가져오는데 실패했습니다');
-            }
-        })
-     
-    }, [])
+        let cartItems = [];
+        // 리덕스 User State를 이용해 유저의 cart안에 상품이 있는지 확인
+        // foreach vs map 
+        // map은 배열의 각 요소에 대해 callback을 실행하고 실행결과를 모은 '새 배열'을 리턴한다.
+       if(user.userData && user.userData.cart.length > 0){
+          user.userData.cart.forEach((item => {
+              cartItems.push(item.id)
+          }))
+          dispatch(getCartItems(cartItems, user.userData.cart))
+       }
+    
+    }, [user.userData])
 
     return (
         <div>
@@ -30,3 +28,6 @@ function CartPage(props) {
 }
 
 export default CartPage
+
+
+

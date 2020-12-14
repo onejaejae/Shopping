@@ -3,10 +3,10 @@ import {
     REGISTER_USER,
     AUTH_USER,
     LOGOUT_USER,
-    ADD_TO_CART
+    ADD_TO_CART,
+    GET_CART_ITEMS
 } from '../_actions/types';
  
-
 export default function(state={},action){
     switch(action.type){
         case REGISTER_USER:
@@ -19,6 +19,8 @@ export default function(state={},action){
             return { ...state }
         case ADD_TO_CART:
             return { ...state, userData : {...state.userData, cart : action.payload.userInfo}}
+        case GET_CART_ITEMS:
+            return { ...state, cartDetail : action.payload }
         default:
             return state;
     }
