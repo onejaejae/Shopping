@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { User } = require("../models/User");
 const { Product } = require('../models/Product');
-
+const { Payment } = require('../models/Payment');
 const { auth } = require("../middleware/auth");
+const async = require("async");
+
 
 
 //=================================
@@ -104,7 +106,7 @@ router.post("/addToCart", auth, (req, res) => {
                 { new : true }
             )
             .exec((err, userInfo) => {
-                console.log(userInfo)
+           
                 if (err) return res.json({ success: false, err });
                 return res.status(200).send({
                     success: true,
@@ -128,7 +130,7 @@ router.post("/addToCart", auth, (req, res) => {
                 { new : true }
             )
             .exec((err, userInfo) => {
-                console.log(userInfo)
+           
                 if (err) return res.json({ success: false, err });
                 return res.status(200).send({
                     success: true,
@@ -149,7 +151,7 @@ router.get('/removeFromCart', auth, (req, res) => {
     User.findOneAndUpdate(
         { "_id" : userId },
         { $pull : { cart : { id : productId }}},
-        { new : true}
+        { new : true }
     )
     .exec((err, userInfo) => {
         // array = ['5fccb965901a5b10f83203e0', '5fcbda94786a2f25386b35eb'] 이런식으로 바꿔주기
@@ -171,6 +173,98 @@ router.get('/removeFromCart', auth, (req, res) => {
             })
     })
 
+})
+
+router.post('/SuccessBuy', auth, (req, res) => {
+    // 1. User Collection 안에 History 필드 안에 간단한 결제 정보 넣어주기
+    const userId = req.user._id;
+
+    let History = [];
+    let transactionData = {};
+
+    req.body.CartDetail.forEach(item => {
+        History.push({
+            dateOfPurchase : Date.now(),
+            title : item.title,
+            id : item._id,
+            price : item.price,
+            quantity : item.quantity,
+            paymentId : req.body.Payment.paymentID
+        })
+    })
+
+    // 2. Payment Collection 안에 자세한 결제 정보들 넣어주기
+    transactionData.user = {
+        id : userId,
+        name : req.user.name,
+        email : req.user.email
+    }
+
+    transactionData.data = req.body.Payment;
+    transactionData.product = History;
+
+    // history 정보 저장
+    //https:docs.mongodb.com/manual/reference/operator/update/push/
+    User.findOneAndUpdate(
+        {"_id" : userId },
+        { $push : { history : { $each : History }}, $set : { cart : [] } },
+        { new : true }
+        )
+        .exec((err, User) => {
+            if(err) return res.status(400).json({
+                success : false,
+                err
+            })
+
+            // payment에다가 transactionData 저장
+            const payment = new Payment(transactionData);
+            payment.save((err, Payment) => {
+                if(err) return res.status(400).json({
+                    success : false,
+                    err
+                })
+                // 3. Product Collection 안에 있는 sold 필드 정보 업데이트 
+
+                // 상품마다 몇개를 주문했는지
+                let products = [];
+                Payment.product.map(item => {
+                    products.push({
+                        id : item.id,
+                        quantity : item.quantity
+                    })
+                })
+
+                async.eachSeries(products, (item, callback) => {
+                    Product.update(
+                        {"_id" : item.id },
+                        { $inc : { sold : item.quantity }},
+                        // front에 데이터를 전달하지 않아도 되서 false로 했다
+                        { new : false },
+                        callback
+                    )
+                    .exec((err) => {
+                        if(err) return res.status(400).json({
+                            success : false,
+                            err
+                        })
+
+                        return res.status(200).json({
+                            success : true,
+                            cart : User.cart,
+                            cartDetail : []
+                        })
+                    })
+                })
+
+            })
+         
+        })
+
+ 
+
+ 
+    
+ 
 })
 
 module.exports = router;

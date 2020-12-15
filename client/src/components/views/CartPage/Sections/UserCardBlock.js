@@ -1,11 +1,12 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import "./UserCardBlock.css"
-import { removeCartItem } from '../../../../_actions/user_actions';
 
-function UserCardBlock({ products }) {
+function UserCardBlock({ products, removeItem }) {
     const dispatch = useDispatch();
     const user = useSelector(state => state.user)
+
+  
  
     const renderItems = () => {
      return  products && products.map((product, index) => (
@@ -22,16 +23,12 @@ function UserCardBlock({ products }) {
                     $  {product.price}
                 </td>
                 <td>
-                    <button onClick={ () => removeHandler(product._id) }>
+                    <button onClick={ () => removeItem(product._id) }>
                         Remove
                     </button>
                 </td>
             </tr>
         ))
-    }
-
-    const removeHandler  = (productId) => {
-        dispatch(removeCartItem(productId))
     }
 
     return (
